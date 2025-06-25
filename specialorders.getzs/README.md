@@ -23,7 +23,7 @@ A modern, web-based order management system built with Flask and SQLAlchemy for 
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone git@github.com:niclindb/Getzs.SpecialOrders.git
    cd specialorders.getzs
    ```
 
