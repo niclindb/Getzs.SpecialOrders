@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GETZS Special Orders</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            text-align: center;
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1a202c;
+            letter-spacing: -0.025em;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+        
+        .content-header {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .search-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .create-order-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.3);
+        }
+        
+        .create-order-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 15px -3px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .search-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .search-controls select,
+        .search-controls input {
+            padding: 0.625rem 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            background: white;
+        }
+        
+        .search-controls select:focus,
+        .search-controls input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .search-controls button {
+            padding: 0.625rem 1.25rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .search-controls button:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+        
+        .table-container {
+            padding: 0;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        th {
+            background: #f7fafc;
+            padding: 1rem 1.25rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.875rem;
+            color: #2d3748;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        tr {
+            transition: all 0.2s ease;
+        }
+        
+        tr:hover {
+            background: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .status-pending {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-on_order {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-backordered {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-will_wait {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        .no-orders {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+            font-size: 1.125rem;
+        }
+        
+        @media (max-width: 768px) {
+            .search-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-controls {
+                justify-content: center;
+            }
+            
+            .page-header h1 {
+                font-size: 1.875rem;
+            }
+            
+            .content-header {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>GETZ'S Special Orders</h1>
+    </div>
+    
+    <div class="container">
+        <div class="content-header">
+            <div class="search-bar">
+                <a href="/createOrder" class="create-order-btn">+ Create Order</a>
+                <form class="search-controls" action="/search" method="get">
+                    <select name="status" id="status">
+                        <option value="open" {% if selected_status == 'open' %}selected{% endif %}>Open</option>
+                        <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="on_order" {% if selected_status == 'on_order' %}selected{% endif %}>On Order</option>
+                        <option value="backordered" {% if selected_status == 'backordered' %}selected{% endif %}>Backordered</option>
+                        <option value="will_wait" {% if selected_status == 'will_wait' %}selected{% endif %}>Will Wait</option>
+                        <option value="completed" {% if selected_status == 'completed' %}selected{% endif %}>Complete</option>
+                    </select>
+                    <input type="text" name="search" placeholder="Search orders..." value="{{ search_text or '' }}">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            {% if orders %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Customer Name</th>
+                        <th>Phone</th>
+                        <th>Brand</th>
+                        <th>Style</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Quantity</th>
+                        <th>Date Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr onclick="window.location.href='/editOrder/{{ order.id }}'" style="cursor: pointer;">
+                        <td><span class="status-badge status-{{ order.status }}">{{ order.status.replace('_', ' ').replace('completed', 'complete').title() }}</span></td>
+                        <td title="{{ order.customer_name }}"><strong>{{ order.customer_name }}</strong></td>
+                        <td title="{{ order.customer_phone }}">{{ order.customer_phone }}</td>
+                        <td title="{{ order.brand }}">{{ order.brand }}</td>
+                        <td title="{{ order.style|title }}">{{ order.style|title }}</td>
+                        <td title="{{ order.size }}"><code>{{ order.size }}</code></td>
+                        <td title="{{ order.color|title }}">{{ order.color|title }}</td>
+                        <td title="{{ order.quantity }}"><strong>{{ order.quantity }}</strong></td>
+                        <td title="{{ order.date_updated.strftime('%m-%d-%Y') }}">{{ order.date_updated.strftime('%m-%d-%Y') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="no-orders">
+                <p>No orders found matching your criteria.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

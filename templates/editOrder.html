@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GETZS Special Orders</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            text-align: center;
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1a202c;
+            letter-spacing: -0.025em;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+        
+        .content-header {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .back-link a {
+            display: inline-flex;
+            align-items: center;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+        
+        .back-link a:hover {
+            color: #5a67d8;
+            transform: translateX(-2px);
+        }
+        
+        .page-title {
+            text-align: center;
+            margin: 0;
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1a202c;
+            letter-spacing: -0.025em;
+        }
+        
+        .order-info {
+            background: linear-gradient(135deg, #f8fafc 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem;
+            border-left: 5px solid #667eea;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .order-info p {
+            margin: 0.5rem 0;
+            font-size: 0.875rem;
+            color: #495057;
+        }
+        
+        .order-info strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .form-container {
+            padding: 0 2rem 2rem 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            background: white;
+            color: #2d3748;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            min-width: 120px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 15px -3px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(107, 114, 128, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 15px -3px rgba(107, 114, 128, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 15px -3px rgba(239, 68, 68, 0.4);
+        }
+        
+        .required-field::after {
+            content: " *";
+            color: #ef4444;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-on_order {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-backordered {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-will_wait {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .page-header h1 {
+                font-size: 1.875rem;
+            }
+            
+            .content-header {
+                padding: 1.5rem;
+            }
+            
+            .form-container {
+                padding: 0 1.5rem 1.5rem 1.5rem;
+            }
+            
+            .order-info {
+                margin: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>GETZ'S Special Orders</h1>
+    </div>
+    
+    <div class="container">
+        <div class="back-link">
+            <a href="/">← Back to Orders</a>
+        </div>
+        <div class="content-header">        
+        <div class="form-container">
+            <form method="POST" action="/editOrder/{{ order.id }}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="status" class="required-field">Status</label>
+                        <select id="status" name="status" required>
+                            <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="on_order" {% if order.status == 'on_order' %}selected{% endif %}>On Order</option>
+                            <option value="backordered" {% if order.status == 'backordered' %}selected{% endif %}>Backordered</option>
+                            <option value="will_wait" {% if order.status == 'will_wait' %}selected{% endif %}>Will Wait</option>
+                            <option value="completed" {% if order.status == 'completed' %}selected{% endif %}>Complete</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="customer_name" class="required-field">Customer Name</label>
+                        <input type="text" id="customer_name" name="customer_name" value="{{ order.customer_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer_phone" class="required-field">Customer Phone</label>
+                        <input type="tel" id="customer_phone" name="customer_phone" value="{{ order.customer_phone }}" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="staff_member" class="required-field">Staff Member</label>
+                        <input type="text" id="staff_member" name="staff_member" value="{{ order.staff_member }}" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="brand" class="required-field">Brand</label>
+                        <input type="text" id="brand" name="brand" value="{{ order.brand }}" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="style" class="required-field">Style</label>
+                        <input type="text" id="style" name="style" value="{{ order.style }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="size" class="required-field">Size</label>
+                        <input type="text" id="size" name="size" value="{{ order.size }}" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="color" class="required-field">Color</label>
+                        <input type="text" id="color" name="color" value="{{ order.color }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity" class="required-field">Quantity</label>
+                        <input type="number" id="quantity" name="quantity" min="1" value="{{ order.quantity }}" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" name="notes" placeholder="Enter any additional notes...">{{ order.notes }}</textarea>
+                </div>
+                
+                <div class="button-group">
+                    <a href="/" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Update Order</button>
+                </div>
+            </form>
+            <div class="order-info">
+                <p><strong>Created:</strong> {{ order.date_created.strftime('%m-%d-%Y') }}</p>
+                <p><strong>Last Modified:</strong> {{ order.date_updated.strftime('%m-%d-%Y') }}</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
